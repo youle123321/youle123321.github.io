@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图书商城</title>
+    <link rel="stylesheet" href="CSS/lab4-2502-072-index.css">
+    <style>
+/* 登录弹窗样式 */
+.login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.login-box {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 360px;
+    position: relative;
+    box-shadow: 0 0 15px #ccc;
+}
+.login-box h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #222;
+    font-size: 20px;
+}
+.form-group {
+    margin-bottom: 18px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+.form-group input:focus{
+    border-color: #ff6700;
+    outline: none;
+}
+.btn {
+    width: 100%;
+    padding: 11px;
+    background: #ff6700;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+.btn:hover {
+    background: #e35f00;
+    transform: scale(1.02);
+}
+.switch-tip {
+    text-align: center;
+    margin-top: 18px;
+    color: #666;
+}
+.switch-tip a {
+    color: #ff6700;
+    cursor: pointer;
+}
+.hidden {
+    display: none;
+}
+
+/* 【修正后的轮播图：完整展示+来回滚动】 */
+.banner-wrap{
+    width: 720px;
+    height: auto;
+    margin: 40px auto;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+.banner-list{
+    animation: upDownMove 10s linear infinite alternate;
+}
+.banner-list img{
+    width: 720px;
+    height: auto;
+    display: block;
+}
+/* 关键：来回滚动动画 */
+@keyframes upDownMove{
+    0%{transform: translateY(0);}
+    100%{transform: translateY(-720px);}
+}
+
+/* 头部：搜索框+购物车+登录 */
+.header .header-search{
+    float: left;
+    margin-left: 40px;
+    height: 80px;
+    line-height: 80px;
+}
+.header .header-search input{
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px 20px 20px 20px;
+    width: 200px;
+    outline: none;
+}
+.header .header-search .search-btn{
+    background: #ff6700;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 0 20px 20px 0;
+    margin-left: -4px;
+    cursor: pointer;
+}
+.header .right-actions {
+    float: right;
+    height: 80px;
+    line-height: 80px;
+    margin-right: 40px;
+}
+.header .right-actions a {
+    display: inline-block;
+    margin-left: 28px;
+    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+.header .right-actions a:hover {
+    color: #ff6700;
+}
+.icon-cart,.icon-search {
+    display: inline-block;
+    transition: transform 0.5s;
+}
+.icon-cart:hover,.icon-search:hover {
+    transform: rotate(360deg);
+}
+
+/* 热门推荐：加入购物车按钮 */
+.recommend-item .add-cart{
+    margin-top: 8px;
+    padding: 6px 15px;
+    background: #ff6700;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.recommend-item .add-cart:hover{
+    background: #e35f00;
+}
+    </style>
+</head>
+<body>
+    <!-- 登录弹窗 默认隐藏 -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <div id="loginForm">
+                <h3>用户登录</h3>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="loginUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码">
+                </div>
+                <button class="btn" onclick="login()">登录</button>
+                <div class="switch-tip">
+                    还没有账号？<a onclick="showRegister()">立即注册</a>
+                </div>
+            </div>
+
+            <div id="registerForm" class="hidden">
+                <h3>用户注册</h3>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="regUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="regPassword" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" id="regConfirmPwd" placeholder="请再次输入密码">
+                </div>
+                <button class="btn" onclick="register()">注册</button>
+                <div class="switch-tip">
+                    已有账号？<a onclick="showLogin()">立即登录</a>
+                </div>
+            </div>
+            <button style="position:absolute;top:12px;right:15px;border:none;background:none;font-size:22px;cursor:pointer;color:#999;" onclick="closeModal()">×</button>
+        </div>
+    </div>
+
+    <header class="header">
+        <nav class="nav">
+            <ul>
+                <li><a href="#">首页</a></li>
+                <li><a href="#">图书分类</a></li>
+                <li><a href="#">热门推荐</a></li>
+                <li><a href="#">新书上市</a></li>
+                <li><a href="#">关于我们</a></li>
+            </ul>
+        </nav>
+        <!-- 搜索框 -->
+        <div class="header-search">
+            <input type="text" placeholder="搜索图书...">
+            <button class="search-btn">🔍</button>
+        </div>
+        <!-- 右侧：购物车+登录 -->
+        <div class="right-actions">
+            <a href="#" class="icon-cart">🛒 购物车</a>
+            <a href="javascript:openModal()">登录/注册</a>
+        </div>
+        <div class="clearfix"></div>
+    </header>
+
+    <div class="container">
+        <aside class="left-sidebar">
+            <h3>图书分类导航</h3>
+            <ul>
+                <li><a href="#">文学小说</a></li>
+                <li><a href="#">计算机技术</a></li>
+                <li><a href="#">经管励志</a></li>
+                <li><a href="#">生活艺术</a></li>
+                <li><a href="#">少儿读物</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <section class="book-show">
+                <h2>图书展示</h2>
+                <div class="book-item">
+                    <img src="img/2.jpg" alt="图书封面">
+                    <div class="book-info">
+                        <h4>计算机组成原理</h4>
+                        <p>经典计算机底层原理教材</p>
+                    </div>
+                </div>
+                <div class="book-item">
+                    <img src="img/3.jpg" alt="图书封面">
+                    <div class="book-info">
+                        <h4>C++ Primer</h4>
+                        <p>C++入门经典书籍</p>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </section>
+
+            <section class="hot-recommend">
+                <h2>热门推荐</h2>
+                <div class="recommend-item">
+                    <img src="img/4.jpg" alt="推荐图书">
+                    <p>活着</p>
+                    <button class="add-cart">加入购物车</button>
+                </div>
+                <div class="recommend-item">
+                    <img src="img/5.jpg" alt="推荐图书">
+                    <p>平凡的世界</p>
+                    <button class="add-cart">加入购物车</button>
+                </div>
+                <div class="recommend-item">
+                    <img src="img/6.jpg" alt="推荐图书">
+                    <p>三体</p>
+                    <button class="add-cart">加入购物车</button>
+                </div>
+                <div class="clearfix"></div>
+            </section>
+
+            <section class="new-book">
+                <h2>新书上市</h2>
+                <table border="1" cellpadding="8" cellspacing="0">
+                    <tr>
+                        <th>书名</th>
+                        <th>作者</th>
+                        <th>定价</th>
+                        <th>出版日期</th>
+                    </tr>
+                    <tr>
+                        <td>AI时代的编程思维</td>
+                        <td>李航</td>
+                        <td>¥89.00</td>
+                        <td>2025-01-15</td>
+                    </tr>
+                    <tr>
+                        <td>数据结构与算法分析</td>
+                        <td>陈越</td>
+                        <td>¥79.00</td>
+                        <td>2025-02-20</td>
+                    </tr>
+                </table>
+            </section>
+        </main>
+
+        <aside class="right-sidebar">
+            <h3>促销信息</h3>
+            <div class="promo">
+                <p>🔥 全场满99减30</p>
+                <p>📚 新书8折特惠</p>
+                <p>🎁 会员专享福利</p>
+            </div>
+        </aside>
+        <div class="clearfix"></div>
+    </div>
+
+    <!-- 底部上下轮播图（完整展示+来回滚动） -->
+    <div class="banner-wrap">
+        <div class="banner-list">
+            <img src="img/4.jpg" alt="">
+            <img src="img/5.jpg" alt="">
+            <img src="img/6.jpg" alt="">
+        </div>
+    </div>
+
+    <div class="back-top">
+        <a href="#">回到顶部</a>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+        function showLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+        function register() {
+            let username = document.getElementById('regUsername').value.trim();
+            let password = document.getElementById('regPassword').value.trim();
+            let confirmPwd = document.getElementById('regConfirmPwd').value.trim();
+            if (!username || !password || !confirmPwd) {alert('请填写完整信息！');return;}
+            if (password !== confirmPwd) {alert('两次密码输入不一致！');return;}
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let exist = users.find(user => user.username === username);
+            if (exist) {alert('用户名已存在！');return;}
+            users.push({ username, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('注册成功！请登录');
+            showLogin();
+        }
+        function login() {
+            let username = document.getElementById('loginUsername').value.trim();
+            let password = document.getElementById('loginPassword').value.trim();
+            if (!username || !password) {alert('请输入用户名和密码！');return;}
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                alert('登录成功！');
+                closeModal();
+            } else {
+                alert('用户名或密码错误！');
+            }
+        }
+    </script>
+</body>
+</html>
